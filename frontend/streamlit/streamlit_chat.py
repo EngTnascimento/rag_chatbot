@@ -1,4 +1,3 @@
-# chatbot_app.py
 import streamlit as st
 from services import ChatService
 
@@ -7,7 +6,7 @@ class StreamlitChat:
         self.chat_service = chat_service
 
     def run(self):
-        st.title("Chatbot with Streamlit + FastAPI")
+        st.title("Internal ChatBot")
 
         # Initialize chat history in Session State
         if "chat_history" not in st.session_state:
