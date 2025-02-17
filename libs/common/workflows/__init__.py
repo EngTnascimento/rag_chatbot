@@ -1,3 +1,4 @@
-from .rag import RAGWorkflow
+from .rag import RAGWorkflow, RAGState
+from .traits import WorkflowTrait
 
-__all__ = ["RAGWorkflow"]
+__all__ = ["RAGWorkflow", "RAGState", "WorkflowTrait"]
