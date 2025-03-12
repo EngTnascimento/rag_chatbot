@@ -43,14 +43,6 @@ This will start three services:
 
 Access the frontend application by navigating to http://localhost:8501 in your browser.
 
-## Usage
-
-The application can be run as an API service:
-
-```bash
-# Start the API server
-python -m apps.api.main
-```
 
 ## License
 
