@@ -1,0 +1,7 @@
+### Process request
+POST http://localhost:8080/processor/process HTTP/1.1
+Content-Type: application/json
+
+{
+    "key": "excel/relatorios_gerenciais/hortifruti"
+}

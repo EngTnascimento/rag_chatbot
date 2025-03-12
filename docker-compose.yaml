@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  api:
+    container_name: api
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./apps/api:/app
+      - ./libs:/app/libs
+      - ./data:/app/data
+    env_file:
+      - apps/api/.env.docker
+    environment:
+      - PYTHONPATH=/app
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - PYTHONDONTWRITEBYTECODE=1  # Prevents Python from writing .pyc files
+      - PYTHONUNBUFFERED=1  # Ensures Python output is sent straight to terminal
+    depends_on:
+      - chromadb
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  chromadb:
+    container_name: chromadb
+    image: chromadb/chroma:1.0.0b0
+    volumes:
+      - ./chroma:/chroma
+    ports:
+      - "8000:8000"
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  frontend:
+    container_name: chat-frontend
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./frontend:/app/frontend
+      - ./libs:/app/libs
+    env_file:
+      - frontend/.env.docker
+    environment:
+      - PYTHONPATH=/app
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    depends_on:
+      - api
+    networks:
+      - app-network
+    restart: unless-stopped
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  chroma-data:

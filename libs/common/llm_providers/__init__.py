@@ -1,10 +1,4 @@
-from .traits import LLMProviderTrait
-from .ollama.service import OllamaService
-from .ollama.config import ollama_config, OllamaConfig
+from .openai.services.openai_service import OpenaiService
+from .openai.config.openai_config import ChatOpenAIConfig
 
-__all__ = [
-    'LLMProviderTrait',
-    'OllamaService', 
-    'ollama_config',
-    'OllamaConfig'
-]
+__all__ = ["OpenaiService", "ChatOpenAIConfig"]

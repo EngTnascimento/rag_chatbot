@@ -46,6 +46,10 @@ htmlcov/
 .env.development.local
 .env.test.local
 .env.production.local
+# Docker environment files
+.env.docker
+*.env.docker
+
 
 # Dependencies
 node_modules/

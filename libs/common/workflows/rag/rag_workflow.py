@@ -1,25 +1,51 @@
-from typing import Any
-from langgraph.graph import StateGraph
-from libs.common.llm_providers.traits import LLMProviderTrait
-from libs.common.workflows.traits.workflow_trait import WorkflowTrait
-from libs.common.workflows.rag import RAGState
+from langgraph.graph import StateGraph, START, END
+from libs.common.workflows.rag.rag_state import RAGState
+from langgraph.checkpoint.memory import MemorySaver
+from .nodes.retriever_node import retriever_node
+from .nodes.generate_node import generate_node
+from libs.common.llm_providers.openai.services.openai_service import OpenaiService
+import logging
+
+logger = logging.getLogger(__name__)
 
 
-class RAGWorkflow(WorkflowTrait):
+class RAGWorkflow:
     """Abstract base class defining the interface for RAG (Retrieval Augmented Generation) workflows."""
 
-    def __init__(self, llm_provider: LLMProviderTrait):
+    def __init__(self, llm_provider: OpenaiService):
         self.llm_provider = llm_provider
-        self.rag_builder = StateGraph(RAGState)
+        self.builder = StateGraph(RAGState)
+        self.graph = self._compile()
 
-    async def execute(self, state: RAGState) -> Any:
-        """
-        Execute the RAG workflow for a given query.
+    def _compile(self) -> StateGraph:
+        self.builder.add_node(
+            "retrieve",
+            retriever_node,
+        )
+        self.builder.add_node(
+            "generate",
+            generate_node,
+        )
+        self.builder.add_edge(START, "retrieve")
+        self.builder.add_edge("retrieve", "generate")
+        self.builder.add_edge("generate", END)
+        memory = MemorySaver()
+        graph = self.builder.compile(checkpointer=memory)
+        return graph
 
-        Args:
-            query (str): The input query to process through the RAG workflow
-
-        Returns:
-            Any: The result of the RAG workflow execution
-        """
-        pass
+    async def execute(
+        self, user_message: str, user_id: str, prompt_template: str
+    ) -> str:
+        config = {"configurable": {"thread_id": user_id}}
+        events = self.graph.stream(
+            {
+                "messages": [{"role": "user", "content": user_message}],
+                "prompt_template": prompt_template,
+            },
+            config,
+            stream_mode="values",
+        )
+        for event in events:
+            message = event["messages"][-1]
+            if message.type == "ai":
+                return message.content

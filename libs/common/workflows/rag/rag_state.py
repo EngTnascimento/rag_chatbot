@@ -1,11 +1,9 @@
 from typing import Annotated
-from pydantic import BaseModel
-from langgraph.graph import StateGraph
 from langgraph.graph.message import add_messages
+from typing_extensions import TypedDict
 
-class RAGState(BaseModel):
-    documents: Annotated[list, lambda doc: ]
+
+class RAGState(TypedDict):
+    documents: Annotated[list, lambda docs, new_docs: docs + new_docs]
     messages: Annotated[list, add_messages]
-
-
-# graph_builder = StateGraph(RAGState)
+    prompt_template: Annotated[str, lambda _, new: new]

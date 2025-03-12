@@ -1,14 +1,14 @@
-from .llm_providers import LLMProviderTrait, OllamaService, ollama_config, OllamaConfig
-from .workflows import RAGWorkflow, WorkflowTrait, RAGState
+from libs.common.llm_providers.openai.services.openai_service import OpenaiService
+from libs.common.llm_providers.openai.config.openai_config import ChatOpenAIConfig
+from .workflows.rag import RAGWorkflow, RAGState
+from .database import ChromaConfig, ChromaService
 
 
 __all__ = [
-    "LLMProviderTrait",
-    "OllamaService",
-    "ollama_config",
-    "OllamaConfig",
+    "OpenaiService",
+    "ChatOpenAIConfig",
     "RAGWorkflow",
-    "WorkflowTrait",
     "RAGState",
-    "RAGWorkflow",
+    "ChromaConfig",
+    "ChromaService",
 ]
