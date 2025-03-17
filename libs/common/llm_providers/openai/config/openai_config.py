@@ -10,10 +10,10 @@ class ChatOpenAIConfig(BaseModel):
         description="OpenAI API key for authentication",
     )
     model_name: str = Field(
-        default="gpt-3.5-turbo", description="Name of the OpenAI model to use"
+        default="gpt-4o-mini", description="Name of the OpenAI model to use"
     )
     temperature: float = Field(
-        default=0.3,
+        default=1.0,
         ge=0.0,
         le=2.0,
         description="Controls randomness in the model's output. Higher values mean more random completions.",

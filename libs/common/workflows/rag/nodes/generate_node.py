@@ -26,14 +26,19 @@ def generate_node(state: RAGState):
 
     question = state["messages"][-1].content
     context = "\n".join([doc.page_content for doc in state["documents"]])
+    query = state["query"]
+    query_result = state["query_result"]
 
-    print(
-        f"###############################\n{state['messages']}\n###############################"
-    )
-    print(f"Question: {question}")
+    input_variables = {
+        "question": question,
+        "context": context,
+        "messages": state["messages"],
+        "query": query,
+        "query_result": query_result,
+    }
 
-    answer = chain.invoke(
-        {"question": question, "context": context, "messages": state["messages"]}
-    )
+    print(f"Input variables: {input_variables}")
+
+    answer = chain.invoke(input_variables)
 
     return {"messages": [AIMessage(content=answer)]}

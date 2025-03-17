@@ -3,10 +3,9 @@ from libs.common.workflows.rag.rag_state import RAGState
 from langgraph.checkpoint.memory import MemorySaver
 from .nodes.retriever_node import retriever_node
 from .nodes.generate_node import generate_node
+from .nodes.pandas_generator_node import pandas_generator_node
 from libs.common.llm_providers.openai.services.openai_service import OpenaiService
-import logging
-
-logger = logging.getLogger(__name__)
+import pandas as pd
 
 
 class RAGWorkflow:
@@ -26,8 +25,13 @@ class RAGWorkflow:
             "generate",
             generate_node,
         )
+        self.builder.add_node(
+            "pandas_generator",
+            pandas_generator_node,
+        )
         self.builder.add_edge(START, "retrieve")
-        self.builder.add_edge("retrieve", "generate")
+        self.builder.add_edge("retrieve", "pandas_generator")
+        self.builder.add_edge("pandas_generator", "generate")
         self.builder.add_edge("generate", END)
         memory = MemorySaver()
         graph = self.builder.compile(checkpointer=memory)
